@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<canvas>
+
+  <polygon x="100" y="100" color="blue" thickness="2"  closedloop="true">
+    <line angle="-30" length="50"/>
+    <line angle="45" length="125"/>
+    <line angle="-60" length="85"/>
+    <line angle="75" length="245"/>
+   </polygon>
+
+</canvas>
