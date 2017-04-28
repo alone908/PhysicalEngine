@@ -64,6 +64,8 @@ $(document).ready(function(){
   function drawBall(){
     ctx.beginPath();
     ctx.arc(ball.cx,ball.cy,ball.r,0,2*Math.PI);
+    ctx.fillStyle = "yellow";
+    ctx.fill();
     ctx.stroke();
   }
 
