@@ -15,7 +15,7 @@ $(document).ready(function(){
   var ball = {cx:0,
               cy:0,
               r:15,
-              speed:1,
+              speed:10,
               vector:initialVector};
 
   var lines = [
@@ -296,124 +296,150 @@ $(document).ready(function(){
     //
     // }
 
-    console.log(predictLines);
+    // console.log(predictLines);
 
-    // if(ball.vector.x > 0 && ball.vector.y > 0){
-    //   result1 = checkLineIntersection(-300,300,300,300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
-    //   result2 = checkLineIntersection(300,300,300,-300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
-    //   if(result1.onLine1){
-    //     var lastPoint = {x:result1.x,y:result1.y};
-    //   }else if (result2.onLine1) {
-    //     var lastPoint = {x:result2.x,y:result2.y};
-    //   }
-    //
-    // }else if (ball.vector.x < 0 && ball.vector.y < 0) {
-    //   result1 = checkLineIntersection(-300,300,-300,-300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
-    //   result2 = checkLineIntersection(-300,-300,300,-300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
-    //   if(result1.onLine1){
-    //     var lastPoint = {x:result1.x,y:result1.y};
-    //   }else if (result2.onLine1) {
-    //     var lastPoint = {x:result2.x,y:result2.y};
-    //   }
-    //
-    // }else if (ball.vector.x > 0 && ball.vector.y < 0) {
-    //   result1 = checkLineIntersection(300,300,300,-300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
-    //   result2 = checkLineIntersection(-300,-300,300,-300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
-    //   if(result1.onLine1){
-    //     var lastPoint = {x:result1.x,y:result1.y};
-    //   }else if (result2.onLine1) {
-    //     var lastPoint = {x:result2.x,y:result2.y};
-    //   }
-    //
-    // }else if (ball.vector.x < 0 && ball.vector.y > 0) {
-    //   result1 = checkLineIntersection(-300,300,300,300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
-    //   result2 = checkLineIntersection(-300,300,-300,-300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
-    //   if(result1.onLine1){
-    //     var lastPoint = {x:result1.x,y:result1.y};
-    //   }else if (result2.onLine1) {
-    //     var lastPoint = {x:result2.x,y:result2.y};
-    //   }
-    //
-    // }else if (ball.vector.x > 0 && ball.vector.y === 0) {
-    //   result1 = checkLineIntersection(300,300,300,-300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
-    //   var lastPoint = {x:result1.x,y:result1.y};
-    // }else if (ball.vector.x < 0 && ball.vector.y === 0) {
-    //   result1 = checkLineIntersection(-300,300,-300,-300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
-    //   var lastPoint = {x:result1.x,y:result1.y};
-    // }else if (ball.vector.x === 0 && ball.vector.y > 0) {
-    //   result1 = checkLineIntersection(-300,300,300,300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
-    //   var lastPoint = {x:result1.x,y:result1.y};
-    // }else if (ball.vector.x === 0 && ball.vector.y < 0) {
-    //   result1 = checkLineIntersection(-300,-300,300,-300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
-    //   var lastPoint = {x:result1.x,y:result1.y};
-    // }
-    //
-    // // var candidateLine = [];
-    //
-    // var compareX = null;
-    // var compareY = null;
-    // var lastCompareX = null;
-    // var lastCompareY = null;
-    //
-    // var predict = null;
-    //
-    // predictLines = [];
-    //
-    // var ballVectorAngle = ball.vector.horizontalAngleDeg()
-    //
-    // lines.forEach(function(line,i){
-    //
-    //   if(line.x1 > 0 && line.y1 > 0){
-    //     var newLinePoint1 = {x:line.x1+(ball.r+10)*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y1+(ball.r+10)*Math.sin(degreeToRadiu(ballVectorAngle))}
-    //   }else if (line.x1 > 0 && line.y1 < 0) {
-    //     var newLinePoint1 = {x:line.x1+(ball.r+10)*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y1-(ball.r+10)*Math.sin(degreeToRadiu(ballVectorAngle))}
-    //   }else if (line.x1 < 0 && line.y1 > 0) {
-    //     var newLinePoint1 = {x:line.x1-(ball.r+10)*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y1+(ball.r+10)*Math.sin(degreeToRadiu(ballVectorAngle))}
-    //   }else if (line.x1 < 0 && line.y1 < 0) {
-    //     var newLinePoint1 = {x:line.x1-(ball.r+10)*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y1-(ball.r+10)*Math.sin(degreeToRadiu(ballVectorAngle))}
-    //   }
-    //
-    //   if(line.x2 > 0 && line.y2 > 0){
-    //     var newLinePoint2 = {x:line.x2+(ball.r+10)*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y2+(ball.r+10)*Math.sin(degreeToRadiu(ballVectorAngle))}
-    //   }else if (line.x2 > 0 && line.y2 < 0) {
-    //     var newLinePoint2 = {x:line.x2+(ball.r+10)*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y2-(ball.r+10)*Math.sin(degreeToRadiu(ballVectorAngle))}
-    //   }else if (line.x2 < 0 && line.y2 > 0) {
-    //     var newLinePoint2 = {x:line.x2-(ball.r+10)*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y2+(ball.r+10)*Math.sin(degreeToRadiu(ballVectorAngle))}
-    //   }else if (line.x2 < 0 && line.y2 < 0) {
-    //     var newLinePoint2 = {x:line.x2-(ball.r+10)*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y2-(ball.r+10)*Math.sin(degreeToRadiu(ballVectorAngle))}
-    //   }
-    //
-    //
-    //   result = checkLineIntersection(newLinePoint1.x,newLinePoint1.y,newLinePoint2.x,newLinePoint2.y,ball.cx,ball.cy,lastPoint.x,lastPoint.y);
-    //   // console.log(result);
-    //   if(result.onLine1){
-    //     // console.log(line);
-    //     if(result.x >= -300 && result.x <= 300 && result.y >= -300 && result.y <= 300){
-    //       predictLines.push(line);
-    //     }
-    //
-    //     // compareX = Math.abs(ball.cx-result.x);
-    //     // compareY = Math.abs(ball.cy-result.y);
-    //     //
-    //     // if(lastCompareX === null && line !== currentLine){
-    //     //   predict = line;
-    //     // }
-    //     //
-    //     // if(lastCompareX > compareX  && line !== currentLine){
-    //     //   predict = line;
-    //     // }
-    //     //
-    //     // lastCompareX = compareX;
-    //     // lastCompareY = compareY;
-    //
-    //
-    //   }
+    if(ball.vector.x > 0 && ball.vector.y > 0){
+      result1 = checkLineIntersection(-300,300,300,300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
+      result2 = checkLineIntersection(300,300,300,-300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
+      if(result1.onLine1){
+        var lastPoint = {x:result1.x,y:result1.y};
+      }else if (result2.onLine1) {
+        var lastPoint = {x:result2.x,y:result2.y};
+      }
 
-      // console.log('predict');
-      // console.log(predictLines);
+    }else if (ball.vector.x < 0 && ball.vector.y < 0) {
+      result1 = checkLineIntersection(-300,300,-300,-300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
+      result2 = checkLineIntersection(-300,-300,300,-300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
+      if(result1.onLine1){
+        var lastPoint = {x:result1.x,y:result1.y};
+      }else if (result2.onLine1) {
+        var lastPoint = {x:result2.x,y:result2.y};
+      }
+
+    }else if (ball.vector.x > 0 && ball.vector.y < 0) {
+      result1 = checkLineIntersection(300,300,300,-300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
+      result2 = checkLineIntersection(-300,-300,300,-300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
+      if(result1.onLine1){
+        var lastPoint = {x:result1.x,y:result1.y};
+      }else if (result2.onLine1) {
+        var lastPoint = {x:result2.x,y:result2.y};
+      }
+
+    }else if (ball.vector.x < 0 && ball.vector.y > 0) {
+      result1 = checkLineIntersection(-300,300,300,300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
+      result2 = checkLineIntersection(-300,300,-300,-300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
+      if(result1.onLine1){
+        var lastPoint = {x:result1.x,y:result1.y};
+      }else if (result2.onLine1) {
+        var lastPoint = {x:result2.x,y:result2.y};
+      }
+
+    }else if (ball.vector.x > 0 && ball.vector.y === 0) {
+      result1 = checkLineIntersection(300,300,300,-300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
+      var lastPoint = {x:result1.x,y:result1.y};
+    }else if (ball.vector.x < 0 && ball.vector.y === 0) {
+      result1 = checkLineIntersection(-300,300,-300,-300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
+      var lastPoint = {x:result1.x,y:result1.y};
+    }else if (ball.vector.x === 0 && ball.vector.y > 0) {
+      result1 = checkLineIntersection(-300,300,300,300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
+      var lastPoint = {x:result1.x,y:result1.y};
+    }else if (ball.vector.x === 0 && ball.vector.y < 0) {
+      result1 = checkLineIntersection(-300,-300,300,-300,ball.cx,ball.cy,ball.cx+ball.vector.x,ball.cy+ball.vector.y);
+      var lastPoint = {x:result1.x,y:result1.y};
+    }
+
+    // var candidateLine = [];
+
+    var compareX = null;
+    var compareY = null;
+    var lastCompareX = null;
+    var lastCompareY = null;
+
+    var predict = null;
+
+    predictLines = [];
+
+    var ballVectorAngle = ball.vector.horizontalAngleDeg()
+
+    lines.forEach(function(line,i){
+
+      // if(line.x1 > 0 && line.y1 > 0){
+      //   var newLinePoint1 = {x:line.x1+(ball.r+10)*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y1+(ball.r+10)*Math.sin(degreeToRadiu(ballVectorAngle))}
+      // }else if (line.x1 > 0 && line.y1 < 0) {
+      //   var newLinePoint1 = {x:line.x1+(ball.r+10)*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y1-(ball.r+10)*Math.sin(degreeToRadiu(ballVectorAngle))}
+      // }else if (line.x1 < 0 && line.y1 > 0) {
+      //   var newLinePoint1 = {x:line.x1-(ball.r+10)*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y1+(ball.r+10)*Math.sin(degreeToRadiu(ballVectorAngle))}
+      // }else if (line.x1 < 0 && line.y1 < 0) {
+      //   var newLinePoint1 = {x:line.x1-(ball.r+10)*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y1-(ball.r+10)*Math.sin(degreeToRadiu(ballVectorAngle))}
+      // }
+      //
+      // if(line.x2 > 0 && line.y2 > 0){
+      //   var newLinePoint2 = {x:line.x2+(ball.r+10)*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y2+(ball.r+10)*Math.sin(degreeToRadiu(ballVectorAngle))}
+      // }else if (line.x2 > 0 && line.y2 < 0) {
+      //   var newLinePoint2 = {x:line.x2+(ball.r+10)*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y2-(ball.r+10)*Math.sin(degreeToRadiu(ballVectorAngle))}
+      // }else if (line.x2 < 0 && line.y2 > 0) {
+      //   var newLinePoint2 = {x:line.x2-(ball.r+10)*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y2+(ball.r+10)*Math.sin(degreeToRadiu(ballVectorAngle))}
+      // }else if (line.x2 < 0 && line.y2 < 0) {
+      //   var newLinePoint2 = {x:line.x2-(ball.r+10)*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y2-(ball.r+10)*Math.sin(degreeToRadiu(ballVectorAngle))}
+      // }
+
+      if(line.x1 > 0 && line.y1 > 0){
+        var newLinePoint1 = {x:line.x1+ball.r*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y1+ball.r*Math.sin(degreeToRadiu(ballVectorAngle))}
+      }else if (line.x1 > 0 && line.y1 < 0) {
+        var newLinePoint1 = {x:line.x1+ball.r*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y1-ball.r*Math.sin(degreeToRadiu(ballVectorAngle))}
+      }else if (line.x1 < 0 && line.y1 > 0) {
+        var newLinePoint1 = {x:line.x1-ball.r*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y1+ball.r*Math.sin(degreeToRadiu(ballVectorAngle))}
+      }else if (line.x1 < 0 && line.y1 < 0) {
+        var newLinePoint1 = {x:line.x1-ball.r*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y1-ball.r*Math.sin(degreeToRadiu(ballVectorAngle))}
+      }
+
+      if(line.x2 > 0 && line.y2 > 0){
+        var newLinePoint2 = {x:line.x2+ball.r*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y2+ball.r*Math.sin(degreeToRadiu(ballVectorAngle))}
+      }else if (line.x2 > 0 && line.y2 < 0) {
+        var newLinePoint2 = {x:line.x2+ball.r*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y2-ball.r*Math.sin(degreeToRadiu(ballVectorAngle))}
+      }else if (line.x2 < 0 && line.y2 > 0) {
+        var newLinePoint2 = {x:line.x2-ball.r*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y2+ball.r*Math.sin(degreeToRadiu(ballVectorAngle))}
+      }else if (line.x2 < 0 && line.y2 < 0) {
+        var newLinePoint2 = {x:line.x2-ball.r*Math.cos(degreeToRadiu(ballVectorAngle)),y:line.y2-ball.r*Math.sin(degreeToRadiu(ballVectorAngle))}
+      }
 
 
-    // })
+
+      result = checkLineIntersection(newLinePoint1.x,newLinePoint1.y,newLinePoint2.x,newLinePoint2.y,ball.cx,ball.cy,lastPoint.x,lastPoint.y);
+
+      // result = checkLineIntersection(line.x1,line.y1,line.x2,line.y2,ball.cx,ball.cy,lastPoint.x,lastPoint.y);
+
+      // console.log(result);
+      if(result.onLine1 && result.onLine2){
+        // console.log(line);
+        // if(line !== currentLine && result.x >= -300 && result.x <= 300 && result.y >= -300 && result.y <= 300){
+        if(line !== currentLine){
+          predictLines.push(line);
+        }
+
+        // compareX = Math.abs(ball.cx-result.x);
+        // compareY = Math.abs(ball.cy-result.y);
+        //
+        // if(lastCompareX === null && line !== currentLine){
+        //   predict = line;
+        // }
+        //
+        // if(lastCompareX > compareX  && line !== currentLine){
+        //   predict = line;
+        // }
+        //
+        // lastCompareX = compareX;
+        // lastCompareY = compareY;
+
+
+      }
+
+
+
+    })
+    // console.log('predict');
+    // console.log(lastPoint);
+    // console.log(predictLines);
 
     // console.log(predict);
 
