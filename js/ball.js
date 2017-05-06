@@ -37,11 +37,11 @@ $(document).ready(function(){
 
   lines.forEach(function(line,i){
     lines[i].vector = new Victor(line.x2-line.x1,line.y2-line.y1);
-    lines[i].slope = ( (line.y2-line.y1)/(line.x2-line.x1) ).toFixed(1);
+    lines[i].slope = Number( ( (line.y2-line.y1)/(line.x2-line.x1) ).toFixed(1) );
     // if( Math.abs(lines[i].slope) === Infinity ){
     //
     // }
-    lines[i].constant = ( line.y1-( (line.y2-line.y1)/(line.x2-line.x1) )*line.x1 ).toFixed(1);
+    lines[i].constant = Number( ( line.y1-( (line.y2-line.y1)/(line.x2-line.x1) )*line.x1 ).toFixed(1) );
     // if( Math.abs(lines[i].constant) === Infinity ){
     //   lines[i].constant = line.x1;
     // }
@@ -55,12 +55,12 @@ $(document).ready(function(){
     clearCanvas();
     for(var i=1;i<=ball.speed;i++){
       moveBall();
+      collisionDetect(lines);
     }
-    collisionDetect(lines);
     drawGameWorld();
     drawBall();
 
-  },10)
+  },1)
 
   function drawGameWorld(){
     lines.forEach(function(line,i){
@@ -79,9 +79,14 @@ $(document).ready(function(){
     ctx.stroke();
   }
 
-  function moveBall(){
-    ball.cx += ball.vector.x;
-    ball.cy += ball.vector.y;
+  function moveBall(backwards=false){
+    if(backwards){
+      ball.cx -= ball.vector.x;
+      ball.cy -= ball.vector.y;
+    }else if (!backwards) {
+      ball.cx += ball.vector.x;
+      ball.cy += ball.vector.y;
+    }
   }
 
   function collisionDetect(lines){
@@ -98,68 +103,122 @@ $(document).ready(function(){
       //   // console.log('here');
       // }
 
-      var ballCenterInsideLine = true;
-
-      if( line.x1 > line.x2 ){
-          if(ball.cx > line.x1) ballCenterInsideLine = false;
-          if(ball.cx < line.x2) ballCenterInsideLine = false;
-      }else if (line.x2 > line.x1) {
-        if(ball.cx > line.x2) ballCenterInsideLine = false;
-        if(ball.cx < line.x1) ballCenterInsideLine = false;
-      }else if (line.x1 == line.x2) {
-
-      }
-
-      if( line.y1 > line.y2 ){
-          if(ball.cy > line.y1) ballCenterInsideLine = false;
-          if(ball.cy < line.y2) ballCenterInsideLine = false;
-      }else if (line.y2 > line.y1) {
-        if(ball.cy > line.y2) ballCenterInsideLine = false;
-        if(ball.cy < line.y1) ballCenterInsideLine = false;
-      }
-
-      if( Math.abs(line.slope) === Infinity ){
-
-        var distanceFromCenterToLine = Math.abs(ball.cx-line.x1);
-
+      if( Number(distoPoint1.toFixed(1)) <= ball.r || Number(distoPoint2.toFixed(1)) <= ball.r ){
+        console.log('end point');
+        bouncing(line,false);
       }else {
 
-        var distanceFromCenterToLine = Math.abs(line.constant-parallelLine_constant)/Math.sqrt(1+line.slope*line.slope);
+        var ballCenterInsideLine = true;
+
+        if( line.x1 > line.x2 ){
+          if(ball.cx > line.x1) ballCenterInsideLine = false;
+          if(ball.cx < line.x2) ballCenterInsideLine = false;
+        }else if (line.x2 > line.x1) {
+          if(ball.cx > line.x2) ballCenterInsideLine = false;
+          if(ball.cx < line.x1) ballCenterInsideLine = false;
+        }else if (line.x1 == line.x2) {
+
+        }
+
+        if( line.y1 > line.y2 ){
+          if(ball.cy > line.y1) ballCenterInsideLine = false;
+          if(ball.cy < line.y2) ballCenterInsideLine = false;
+        }else if (line.y2 > line.y1) {
+          if(ball.cy > line.y2) ballCenterInsideLine = false;
+          if(ball.cy < line.y1) ballCenterInsideLine = false;
+        }
+
+        if( Math.abs(line.slope) === Infinity ){
+
+          var distanceFromCenterToLine = Math.abs(ball.cx-line.x1);
+
+        }else {
+
+          var distanceFromCenterToLine = Math.abs(line.constant-parallelLine_constant)/Math.sqrt(1+line.slope*line.slope);
+        }
+
+        if(ballCenterInsideLine && distanceFromCenterToLine <= ball.r){
+
+            if( Number( (distanceFromCenterToLine - ball.r).toFixed(1) ) === 0){
+
+              bouncing(line,false);
+
+            }else {
+
+              bouncing(line,true);
+            }
+
+
+            return false;
+
+
+        }
+
+
       }
+
+
+
+            // if( line.x1 > line.x2 ){
+            //     if(ball.cx > line.x1 + Math.abs( ball.r*Math.cos(degreeToRadiu(lineAngle)) ) ) ballCenterInsideLine = false;
+            //     if(ball.cx < line.x2 - Math.abs( ball.r*Math.cos(degreeToRadiu(lineAngle)) ) ) ballCenterInsideLine = false;
+            // }else if (line.x2 > line.x1) {
+            //   if(ball.cx > line.x2 + Math.abs( ball.r*Math.cos(degreeToRadiu(lineAngle)) ) ) ballCenterInsideLine = false;
+            //   if(ball.cx < line.x1 - Math.abs( ball.r*Math.cos(degreeToRadiu(lineAngle)) ) ) ballCenterInsideLine = false;
+            // }else if (line.x1 == line.x2) {
+            //
+            // }
+            //
+            // if( line.y1 > line.y2 ){
+            //     if(ball.cy > line.y1 + Math.abs( ball.r*Math.sin(degreeToRadiu(lineAngle)) ) ) ballCenterInsideLine = false;
+            //     if(ball.cy < line.y2 - Math.abs( ball.r*Math.sin(degreeToRadiu(lineAngle)) ) ) ballCenterInsideLine = false;
+            // }else if (line.y2 > line.y1) {
+            //   if(ball.cy > line.y2 + Math.abs( ball.r*Math.sin(degreeToRadiu(lineAngle)) ) ) ballCenterInsideLine = false;
+            //   if(ball.cy < line.y1 - Math.abs( ball.r*Math.sin(degreeToRadiu(lineAngle)) ) ) ballCenterInsideLine = false;
+            // }
+
+      // if( Math.abs(line.slope) === Infinity ){
+      //
+      //   var distanceFromCenterToLine = Math.abs(ball.cx-line.x1);
+      //
+      // }else {
+      //
+      //   var distanceFromCenterToLine = Math.abs(line.constant-parallelLine_constant)/Math.sqrt(1+line.slope*line.slope);
+      // }
 
 
       // console.log(ballCenterInsideLine);
       // console.log(distanceFromCenterToLine);
 
-      if(ballCenterInsideLine){
+      // if(ballCenterInsideLine){
         // console.log(distanceFromCenterToLine);
-      }
+      // }
 
-      if(ballCenterInsideLine && distanceFromCenterToLine <= ball.r){
-
-
-          console.log('bouncing on radius');
-
-          console.log( (distanceFromCenterToLine - ball.r).toFixed(1) );
-
-          if( distanceFromCenterToLine - ball.r === 0){
-
-            bouncing(line,false);
-
-          }else {
-
-            bouncing(line,true);
-          }
+      // if(ballCenterInsideLine && distanceFromCenterToLine <= ball.r){
 
 
-          return false;
+          // console.log('bouncing on radius');
+
+          // console.log( Number( (distanceFromCenterToLine - ball.r).toFixed(1) ) );
+
+      //     if( Number( (distanceFromCenterToLine - ball.r).toFixed(1) ) === 0){
+      //
+      //       bouncing(line,false,distanceFromCenterToLine);
+      //
+      //     }else {
+      //
+      //       bouncing(line,true,distanceFromCenterToLine);
+      //     }
+      //
+      //
+      //     return false;
+      //
+      //
+      // }
 
 
-      }
 
-
-
-      if(line.vector.length().toFixed(1) === (distoPoint1+distoPoint2).toFixed(1)){
+      // if(line.vector.length().toFixed(1) === (distoPoint1+distoPoint2).toFixed(1)){
 
 
 
@@ -168,9 +227,9 @@ $(document).ready(function(){
 
         // console.log('bouncing');
         // bouncing(line);
-        return false;
+        // return false;
 
-      }
+      // }
     })
 
   }
@@ -181,7 +240,7 @@ $(document).ready(function(){
       var slope2 = (line.y2-line.y1)/(line.x2-line.x1);
       var constant2 = line.y1-slope2*line.x1;
 
-      L2: y=slope
+      // L2: y=slope
 
     })
   }
@@ -189,40 +248,55 @@ $(document).ready(function(){
   function bouncing(line,crossLine){
 
     var enterAngle = ball.vector.horizontalAngleDeg()-line.vector.horizontalAngleDeg();
-    if(Math.abs(enterAngle) < 5 && Math.abs(enterAngle) >= 0) enterAngle = 5;
-    if(Math.abs(enterAngle) > -5 && Math.abs(enterAngle) < 0) enterAngle = -5;
 
-    // console.log('enter vector:(x:'+ball.vector.x+',y:'+ball.vector.y+')');
-    ball.vector = ball.vector.rotateDeg(-2*enterAngle);
-    // console.log('bounce vector:(x:'+ball.vector.x+',y:'+ball.vector.y+')');
-    console.log(crossLine);
+    var ballVectorAngle = ball.vector.horizontalAngleDeg();
+
     if(crossLine){
-      console.log('cross line');
-      var keepMoving = true;
-      while (keepMoving) {
 
-        moveBall();
+      // console.log('cross line');
+
+
+      // var a = ball.r/Math.sin( degreeToRadiu(enterAngle) );
+      // var l = a*distanceFromCenterToLine/ball.r;
+      // var b = a-l;
+
+
+      var keepMoving = true;
+
+      while(keepMoving){
+
+        moveBall(true);
 
         var parallelLine_constant = ball.cy-line.slope*ball.cx;
-      if( Math.abs(line.slope) === Infinity ){
 
-        var distanceFromCenterToLine = Math.abs(ball.cx-line.x1);
+        if( Math.abs(line.slope) === Infinity ){
 
-      }else {
+          var distanceFromCenterToLine = Math.abs(ball.cx-line.x1);
 
-        var distanceFromCenterToLine = Math.abs(line.constant-parallelLine_constant)/Math.sqrt(1+line.slope*line.slope);
-      }
+        }else {
 
-
-
-        if(distanceFromCenterToLine > ball.r){
-          console.log(distanceFromCenterToLine);
-          keepMoving = false
+          var distanceFromCenterToLine = Math.abs(line.constant-parallelLine_constant)/Math.sqrt(1+line.slope*line.slope);
         }
 
+          if(distanceFromCenterToLine > ball.r){
+            // console.log(distanceFromCenterToLine);
+            keepMoving = false
+          }
+
       }
+
     }
 
+      ball.vector = ball.vector.rotateDeg(-2*enterAngle);
+
+  }
+
+  function radiuToDegree(r){
+    return r*180/Math.PI;
+  }
+
+  function degreeToRadiu(d) {
+    return d*Math.PI/180;
   }
 
   function clearCanvas(){
