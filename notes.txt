@@ -1,0 +1,4 @@
+
+// var a = ball.r/Math.sin( degreeToRadiu(enterAngle) );
+// var l = a*distanceFromCenterToLine/ball.r;
+// var b = a-l;
