@@ -16,6 +16,7 @@
 
         var xml = $.parseXML( data );
         map.svgDoc = $( xml );
+        console.log(map.svgDoc);
         map.svgObj = map.parseSVG();
 
         objs.forEach(function(obj,i){

@@ -15,7 +15,7 @@ $(document).ready(function(){
   var ball = {cx:0,
               cy:0,
               r:15,
-              speed:10,
+              speed:5,
               vector:initialVector};
 
   var lines = [
@@ -158,68 +158,6 @@ $(document).ready(function(){
 
   }
 
-  function collisionDetectPredict(lines,ball){
-
-      lines.forEach(function(line,i){
-
-        var distoPoint1 = new Victor(line.x1-ball.cx,line.y1-ball.cy).length();
-        var distoPoint2 = new Victor(line.x2-ball.cx,line.y2-ball.cy).length();
-        var parallelLine_constant = ball.cy-line.slope*ball.cx;
-
-        if( Number(distoPoint1.toFixed(1)) <= ball.r || Number(distoPoint2.toFixed(1)) <= ball.r ){
-
-          if( Number(distoPoint1.toFixed(1)) === ball.r  || Number(distoPoint2.toFixed(1)) === ball.r ){
-            return line;
-          }else {
-            return line;
-          }
-
-          return false;
-
-        }else {
-
-          var ballCenterInsideLine = true;
-
-          if( line.x1 > line.x2 ){
-            if(ball.cx > line.x1) ballCenterInsideLine = false;
-            if(ball.cx < line.x2) ballCenterInsideLine = false;
-          }else if (line.x2 > line.x1) {
-            if(ball.cx > line.x2) ballCenterInsideLine = false;
-            if(ball.cx < line.x1) ballCenterInsideLine = false;
-          }else if (line.x1 == line.x2) {
-
-          }
-
-          if( line.y1 > line.y2 ){
-            if(ball.cy > line.y1) ballCenterInsideLine = false;
-            if(ball.cy < line.y2) ballCenterInsideLine = false;
-          }else if (line.y2 > line.y1) {
-            if(ball.cy > line.y2) ballCenterInsideLine = false;
-            if(ball.cy < line.y1) ballCenterInsideLine = false;
-          }
-
-          if( Math.abs(line.slope) === Infinity ){
-            var distanceFromCenterToLine = Math.abs(ball.cx-line.x1);
-          }else {
-            var distanceFromCenterToLine = Math.abs(line.constant-parallelLine_constant)/Math.sqrt(1+line.slope*line.slope);
-          }
-
-          if(ballCenterInsideLine && distanceFromCenterToLine <= ball.r){
-            if( Number( (distanceFromCenterToLine - ball.r).toFixed(1) ) === 0){
-              return line;
-            }else {
-              return line;
-            }
-            return false;
-          }
-
-        }
-
-      })
-
-      return false;
-  }
-
   function bouncing(line,crossLine,endPoint){
 
     var enterAngle = ball.vector.horizontalAngleDeg()-line.vector.horizontalAngleDeg();
@@ -272,7 +210,7 @@ $(document).ready(function(){
 
     }
 
-    predictIntersect(line);
+    // predictIntersect(line);
 
   }
 
@@ -414,7 +352,43 @@ $(document).ready(function(){
         // console.log(line);
         // if(line !== currentLine && result.x >= -300 && result.x <= 300 && result.y >= -300 && result.y <= 300){
         if(line !== currentLine){
-          predictLines.push(line);
+
+          // var parallelLine_constant = ball.cy-line.slope*ball.cx;
+          // if( Math.abs(line.slope) === Infinity ){
+          //   var distanceFromCenterToLine = Math.abs(ball.cx-line.x1);
+          // }else {
+          //   var distanceFromCenterToLine = Math.abs(line.constant-parallelLine_constant)/Math.sqrt(1+line.slope*line.slope);
+          // }
+
+          if(predictLines.length === 0){
+            predictLines.push(line);
+
+          }else {
+
+
+            var parallelLine_constant = ball.cy-line.slope*ball.cx;
+
+            if( Math.abs(line.slope) === Infinity ){
+              var distanceFromCenterToLine1 = Math.abs(ball.cx-predictLines[0].x1);
+            }else {
+              var distanceFromCenterToLine1 = Math.abs(predictLines[0].constant-parallelLine_constant)/Math.sqrt(1+predictLines[0].slope*predictLines[0].slope);
+            }
+
+            if( Math.abs(line.slope) === Infinity ){
+              var distanceFromCenterToLine2 = Math.abs(ball.cx-line.x1);
+            }else {
+              var distanceFromCenterToLine2 = Math.abs(line.constant-parallelLine_constant)/Math.sqrt(1+line.slope*line.slope);
+            }
+
+            if(distanceFromCenterToLine2 < distanceFromCenterToLine1){
+              predictLines[0] = line;
+            }
+
+
+
+
+          }
+
         }
 
         // compareX = Math.abs(ball.cx-result.x);
@@ -439,7 +413,7 @@ $(document).ready(function(){
     })
     // console.log('predict');
     // console.log(lastPoint);
-    // console.log(predictLines);
+    console.log(predictLines);
 
     // console.log(predict);
 

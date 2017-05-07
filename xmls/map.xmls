@@ -1,12 +1,1 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<canvas>
-
-  <polygon x="100" y="100" color="blue" thickness="2"  closedloop="true">
-    <line angle="-30" length="50"/>
-    <line angle="45" length="125"/>
-    <line angle="-60" length="85"/>
-    <line angle="75" length="245"/>
-   </polygon>
-
-</canvas>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800px" height="800px" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid meet" ><rect id="svgEditorBackground" x="0" y="0" width="800" height="800" style="fill: none; stroke: none;"/><polyline stroke="dodgerblue" id="e3_polyline" style="fill: none; stroke-width: 1px;" points="199 360 248 428 305 354 354 432 403 361 466 434 510 358 563 434 610 355" /><polyline stroke="navy" id="e32_polyline" style="fill: none; stroke-width: 1px;" points="230 186 305 220 282 277 356 285 348 359 399 453 302 496 360 571 255 618" /><polyline stroke="orange" id="e61_polyline" style="fill: none; stroke-width: 1px;" points="595 198 504 216 540 295 455 341 525 454 473 510 594 531 562 598 625 636" /><polygon stroke="black" id="e137_polygon" style="stroke-width: 1px;" points="168 195 55 292 191 489 55 470 89 618" fill="red"/><polygon stroke="black" id="e162_polygon" style="stroke-width: 1px;" points="689 268 759 363 673 477 750 567" fill="blue"/><line id="e202_line" x1="139" y1="47" x2="294" y2="104" stroke="tomato" style="stroke-width: 1px; fill: none;" /><line id="e216_line" x1="544" y1="103" x2="743" y2="43" stroke="tomato" style="stroke-width: 1px; fill: none;" /><line id="e291_line" x1="73" y1="723" x2="232" y2="768" stroke="maroon" style="stroke-width: 1px; fill: none;"/><line id="e305_line" x1="566" y1="769" x2="755" y2="693" stroke="maroon" style="stroke-width: 1px; fill: none;"/><rect x="357" y="29" stroke="black" id="e437_rectangle" style="stroke-width: 1px;" width="79" height="149" fill="lightsteelblue" transform="matrix(1 0 0 1 12 32)"/><circle id="e478_circle" cx="341" cy="660" stroke="black" style="stroke-width: 1px;" r="64.0703" fill="lime" transform="matrix(0.861618 0 0 0.861618 120.438 154.582)"/></svg>
