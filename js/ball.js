@@ -15,7 +15,7 @@ $(document).ready(function(){
   var ball = {cx:0,
               cy:0,
               r:15,
-              speed:5,
+              speed:1,
               vector:initialVector};
 
   var lines = [

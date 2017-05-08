@@ -1,11 +1,14 @@
 function engine(){
 
   this.frameTimer = null;
+  this.frameRate = null;
   this.detectOnLine = true;
   this.detectOnPolyline = true;
   this.detectOnPolygon = true;
+  this.detectOnRect = true;
   this.ball = null;
   this.gameBorder = null;
+  this.destroyTarget = false;
 
 }
 
@@ -14,6 +17,7 @@ engine.prototype = {
   svg : {
 
     svgDoc:null,
+    svgfile:null,
     canvasId:null,
     canvas:null,
     ctx:null,
@@ -24,8 +28,8 @@ engine.prototype = {
     showRect:true,
     showCircle:true,
 
-    loadSVG: function(svgfile){
-
+    loadSVG: function(svgfile,reload){
+      console.log(engine.svg);
       var request = new XMLHttpRequest();
       request.open("GET", svgfile, false);
       request.onreadystatechange = function ()
@@ -50,12 +54,12 @@ engine.prototype = {
               alert( engine.svg.svgDoc.getElementsByTagName('parsererror')[0].textContent )
               engine.svg.svgDoc = null;
           }else {
-              engine.svg.canvas = document.getElementById( engine.svg.canvasId );
-              engine.svg.ctx = engine.svg.canvas.getContext('2d');
-              engine.svg.ctx.translate(engine.svg.canvas.width * 0.5, engine.svg.canvas.height * 0.5);
-              engine.svg.ctx.transform(1, 0, 0, -1, 0, 0);
+              if(!reload) engine.svg.canvas = document.getElementById( engine.svg.canvasId );
+              if(!reload) engine.svg.ctx = engine.svg.canvas.getContext('2d');
+              if(!reload) engine.svg.ctx.translate(engine.svg.canvas.width * 0.5, engine.svg.canvas.height * 0.5);
+              if(!reload) engine.svg.ctx.transform(1, 0, 0, -1, 0, 0);
               engine.svg.svgObj = engine.svg.parseSVG();
-              console.log(engine.svg);
+              // console.log(engine.svg);
           }
       }
 
@@ -193,10 +197,24 @@ engine.prototype = {
 
       rect.x = Number(rect.x)-engine.svg.canvas.width*0.5;
       rect.y = -Number(rect.y)+engine.svg.canvas.height*0.5;
-      rect.x1 = Number(rect.x);
-      rect.y1 = Number(rect.y);
-      rect.x2 = Number(rect.width);
-      rect.y2 = -Number(rect.height);
+      rect.width = Number(rect.width);
+      rect.height = Number(rect.height);
+      rect.x1 = rect.x;
+      rect.y1 = rect.y;
+      rect.x2 = rect.width;
+      rect.y2 = -rect.height;
+
+      rect.lines = [{objName:'line',parentId:rect.id,stroke:rect.stroke,style:rect.style,x1:rect.x1,y1:rect.y1,x2:rect.x1+rect.width,y2:rect.y1},
+                    {objName:'line',parentId:rect.id,stroke:rect.stroke,style:rect.style,x1:rect.x1+rect.width,y1:rect.y1,x2:rect.x1+rect.width,y2:rect.y1-rect.height},
+                    {objName:'line',parentId:rect.id,stroke:rect.stroke,style:rect.style,x1:rect.x1+rect.width,y1:rect.y1-rect.height,x2:rect.x1,y2:rect.y1-rect.height},
+                    {objName:'line',parentId:rect.id,stroke:rect.stroke,style:rect.style,x1:rect.x1,y1:rect.y1-rect.height,x2:rect.x1,y2:rect.y1}];
+      rect.lines.forEach(function(line,i){
+        rect.lines[i].slope = Number( ( (line.y2-line.y1)/(line.x2-line.x1) ).toFixed(1) );
+        rect.lines[i].constant = Number( (line.y1-(line.y2-line.y1)/(line.x2-line.x1)*line.x1).toFixed(1) );
+        rect.lines[i].vector = new engine.vector(line.x2-line.x1,line.y2-line.y1);
+        rect.lines[i].length = line.vector.length();
+        rect.lines[i].angle = line.vector.horizontalAngleDeg();
+      })
 
       return rect;
 
@@ -306,18 +324,20 @@ engine.prototype = {
 
   }, // end of svg object ------------------------------------------------------
 
-  createGameWorld: function(canvasId=null,svgfile=null){
-    if(this.svg.canvasId === null || this.svg.svgObj === null){
+  createGameWorld: function(canvasId=null,svgfile=null,reload=false){
+    if(this.svg.canvasId === null || this.svg.svgObj === null || reload){
       if(canvasId === null || svgfile===null){
         alert('You must give canvasId and svg source to the engine.');
       }else if (canvasId !== null && svgfile !== null) {
         this.svg.canvasId = canvasId;
-        this.svg.loadSVG(svgfile);
+        this.svg.svgfile = svgfile;
+        if(reload)  this.svg.loadSVG(svgfile,true);
+        if(!reload) this.svg.loadSVG(svgfile,false);
       }
     }
 
-    if(this.ball === null){
-      this.ball = {id:'game_ball',cx:0,cy:0,r:10,speed:1,vector:null,stroke:'black',style:'stroke-width: 1px;',fill:'yellow'};
+    if(this.ball === null || reload){
+      this.ball = {id:'game_ball',cx:0,cy:100,r:10,speed:1,vector:null,stroke:'black',style:'stroke-width: 1px;',fill:'yellow'};
       if(Math.random() < 0.5){var sign1=-1}else { var sign1=1 }
       if(Math.random() < 0.5){var sign2=-1}else { var sign2=1 }
       var initialX = sign1*Math.random();
@@ -325,11 +345,11 @@ engine.prototype = {
       this.ball.vector = new engine.vector(initialX,initialY);
     }
 
-    if(this.gameBorder === null){
-      this.gameBorder = [{id:'top_border',x1:-engine.svg.canvas.width*0.5,y1:engine.svg.canvas.height*0.5,x2:engine.svg.canvas.width*0.5,y2:engine.svg.canvas.height*0.5,vector:null,angle:0,length:null,slope:0,constant:engine.svg.canvas.height*0.5},
-                         {id:'right_border',x1:engine.svg.canvas.width*0.5,y1:engine.svg.canvas.height*0.5,x2:engine.svg.canvas.width*0.5,y2:-engine.svg.canvas.height*0.5,vector:null,angle:90,length:null,slope:Infinity,constant:engine.svg.canvas.width*0.5},
-                         {id:'bottom_border',x1:-engine.svg.canvas.width*0.5,y1:-engine.svg.canvas.height*0.5,x2:engine.svg.canvas.width*0.5,y2:-engine.svg.canvas.height*0.5,vector:null,angle:0,length:null,slope:0,constant:-engine.svg.canvas.height*0.5},
-                         {id:'left_border',x1:-engine.svg.canvas.width*0.5,y1:engine.svg.canvas.height*0.5,x2:-engine.svg.canvas.width*0.5,y2:-engine.svg.canvas.height*0.5,vector:null,angle:90,length:null,slope:Infinity,constant:-engine.svg.canvas.width*0.5}];
+    if(this.gameBorder === null || reload){
+      this.gameBorder = [{objName:'border',id:'top_border',x1:-engine.svg.canvas.width*0.5,y1:engine.svg.canvas.height*0.5,x2:engine.svg.canvas.width*0.5,y2:engine.svg.canvas.height*0.5,vector:null,angle:0,length:null,slope:0,constant:engine.svg.canvas.height*0.5},
+                         {objName:'border',id:'right_border',x1:engine.svg.canvas.width*0.5,y1:engine.svg.canvas.height*0.5,x2:engine.svg.canvas.width*0.5,y2:-engine.svg.canvas.height*0.5,vector:null,angle:90,length:null,slope:Infinity,constant:engine.svg.canvas.width*0.5},
+                         {objName:'border',id:'bottom_border',x1:-engine.svg.canvas.width*0.5,y1:-engine.svg.canvas.height*0.5,x2:engine.svg.canvas.width*0.5,y2:-engine.svg.canvas.height*0.5,vector:null,angle:0,length:null,slope:0,constant:-engine.svg.canvas.height*0.5},
+                         {objName:'border',id:'left_border',x1:-engine.svg.canvas.width*0.5,y1:engine.svg.canvas.height*0.5,x2:-engine.svg.canvas.width*0.5,y2:-engine.svg.canvas.height*0.5,vector:null,angle:90,length:null,slope:Infinity,constant:-engine.svg.canvas.width*0.5}];
 
       this.gameBorder[0].vector = new engine.vector(this.gameBorder[0].x2-this.gameBorder[0].x1,this.gameBorder[0].y2-this.gameBorder[0].y1);
       this.gameBorder[0].length = this.gameBorder[0].vector.length();
@@ -378,17 +398,22 @@ engine.prototype = {
     if(this.detectOnLine) this.collisionDetectOnLine(this.svg.line);
     if(this.detectOnPolyline){
       this.svg.polyline.forEach(function(polyline,i){
-        engine.collisionDetectOnLine(polyline.lines);
+        engine.collisionDetectOnLine(polyline.lines,i,polyline.objName);
       })
     }
     if(this.detectOnPolygon){
       this.svg.polygon.forEach(function(polygon,i){
-        engine.collisionDetectOnLine(polygon.lines);
+        engine.collisionDetectOnLine(polygon.lines,i,polygon.objName);
+      })
+    }
+    if(this.detectOnRect){
+      this.svg.rect.forEach(function(rect,i){
+        if(rect.id !== 'svgEditorBackground') engine.collisionDetectOnLine(rect.lines,i,rect.objName);
       })
     }
   },
 
-  collisionDetectOnLine: function(lines){
+  collisionDetectOnLine: function(lines,parentKey = null,parentName = null){
 
       var toPoint1Vector = new engine.vector();
       var toPoint2Vector = new engine.vector();
@@ -411,8 +436,10 @@ engine.prototype = {
 
           if( Number(toPoint1Leng.toFixed(1)) === engine.ball.r  || Number(toPoint2Leng.toFixed(1)) === engine.ball.r ){
             engine.bouncing(line,false,true);
+            engine.destroyObj(line,i,parentKey,parentName);
           }else {
             engine.bouncing(line,true,true);
+            engine.destroyObj(line,i,parentKey,parentName);
           }
 
           return false;
@@ -448,8 +475,10 @@ engine.prototype = {
           if(ballCenterInsideLine && distanceFromCenterToLine <= engine.ball.r){
             if( Number( (distanceFromCenterToLine - engine.ball.r).toFixed(1) ) === 0){
               engine.bouncing(line,false,false);
+              engine.destroyObj(line,i,parentKey,parentName);
             }else {
               engine.bouncing(line,true,false);
+              engine.destroyObj(line,i,parentKey,parentName);
             }
             return false;
           }
@@ -514,19 +543,76 @@ engine.prototype = {
 
   },
 
+  destroyObj: function(line,childKey,parentKey,parentName){
+    if(this.destroyTarget){
+
+      var objName = (parentKey !== null) ? parentName : line.objName;
+
+      if(parentKey !== null){
+          if(this.svg[objName] !== undefined) delete this.svg[objName][parentKey];
+      }else {
+          if(this.svg[objName] !== undefined) delete this.svg[objName][childKey];
+      }
+    }
+  },
+
   clearFrame: function(){
     this.svg.ctx.clearRect(-this.svg.canvas.width*0.5, -this.svg.canvas.height*0.5, this.svg.canvas.width, this.svg.canvas.height);
   },
 
   updateFrame: function(rate){
-    this.frameTimer = setInterval(function(){
+    if(this.frameTimer === null){
 
-      engine.clearFrame();
-      engine.moveBall();
-      engine.fireCollisionDetect();
-      engine.createGameWorld();
+      this.frameRate = rate;
 
-    },rate)
+      this.frameTimer = setInterval(function(){
+
+        engine.clearFrame();
+        engine.moveBall();
+        engine.fireCollisionDetect();
+        engine.createGameWorld();
+
+      },rate)
+    }
+  },
+
+  stop: function(){
+    if(this.frameTimer !== null){
+      clearInterval(this.frameTimer);
+      this.frameTimer = null;
+    }
+  },
+
+  reload: function(){
+
+    if(this.frameTimer !== null){
+      this.stop();
+    }
+    this.clearFrame();
+
+    for (var index in this.svg.svgObj){
+      if(parseInt(index) || index === '0'){
+        var objName = this.svg.svgObj[index].objName;
+        if(typeof this.svg[objName] !== 'undefined'){ this.svg[objName] = undefined }
+      }
+    }
+
+    this.svg.svgObj = null;
+
+    this.svg.showLine = true;
+    this.svg.showPolyline = true;
+    this.svg.showPolygon = true;
+    this.svg.showRect = true;
+    this.svg.showCircle = true;
+
+    this.detectOnLine = true;
+    this.detectOnPolyline = true;
+    this.detectOnPolygon = true;
+    this.detectOnRect = true;
+    this.destroyTarget = false;
+
+    this.createGameWorld(this.svg.canvasId,this.svg.svgfile,true);
+    this.updateFrame(this.frameRate);
   },
 
   vector: function(x=null,y=null){
@@ -569,16 +655,13 @@ engine.prototype = {
   },  // end of vector function ------------------------------------------------
 
   math: {
-    lineLength: function(x1,y1,x2,y2){
-      return Math.hypot( (x2-x1), (y2-y1) );
+    radian2degrees: function(rad) {
+      var degrees = 180 / Math.PI;
+      return rad * degrees;
     },
-    lineAngleToAxis: function(x1,y1,x2,y2){
-      var dy = y2 - y1;
-      var dx = x2 - x1;
-      var theta = -Math.atan2(dy, dx); // range (-PI, PI]
-      theta *= 180 / Math.PI; // rads to degs, range (-180, 180]
-      //if (theta < 0) theta = 360 + theta; // range [0, 360)
-      return theta;
+    degrees2radian: function (deg) {
+      var degrees = 180 / Math.PI;
+      return deg / degrees;
     },
     areaOfTriangle: function(a,b,c){
 

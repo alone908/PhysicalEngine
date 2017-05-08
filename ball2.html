@@ -3,15 +3,85 @@
 
 <head>
 <title>Bouncing Ball</title>
-
-<!-- <script src="appjs/victor.min.js"></script> -->
+<link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body>
+<body style="padding:10px;">
+<div id="canvasContainer" style="display:inline-block;width:800px;height:800px;">
 <canvas id="canvas" width="800px" height="800px" style="width:800px;height:800px;border:1px solid black;"></canvas>
-</body>
+</div>
+<div id="controlContainer" style="display:inline-block;width:300px;height:800px;vertical-align:top;border:1px solid red;padding:10px;">
+
+  <h4>Controller</h4>
+  <button id="run" type="button" class="btn btn-default"><span style="font-weight:bold;">Run<span></button>
+  <button id="stop" type="button" class="btn btn-default"><span style="font-weight:bold;">Stop<span></button>
+  <button id="reload" type="button" class="btn btn-default"><span style="font-weight:bold;">Reload<span></button>
+  <hr>
+  <form class="form-horizontal">
+    <h4>Ball Settings</h4>
+
+    <div class="form-group">
+      <label for="inputEmail3" class="col-sm-1 control-label" style="width:60px;">Size:</label>
+      <div class="col-sm-3" style="width:200px;">
+        <input type="text" id="size" class="form-control" value="10" style="display:inline-block;width:50px;vertical-align:bottom;">
+        <button type="button" id="addSize" class="btn btn-default"><span style="font-weight:bold;">+<span></button>
+        <button type="button" id="minusSize" class="btn btn-default"><span style="font-weight:bold;">-<span></button>
+      </div>
+    </div>
+
+    <div class="form-group" >
+      <label for="inputEmail3" class="col-sm-1 control-label" style="width:60px;">Speed:</label>
+      <div class="col-sm-3" style="width:200px;">
+        <input type="text" id="speed" class="form-control" value="1" style="display:inline-block;width:50px;vertical-align:bottom;">
+        <button type="button" id="addSpeed" class="btn btn-default"><span style="font-weight:bold;">+<span></button>
+        <button type="button" id="minusSpeed" class="btn btn-default"><span style="font-weight:bold;">-<span></button>
+      </div>
+    </div>
+    <hr>
+    <h4>Hide Object</h4>
+    <span>Ball will bounce on the invisible object, unless you turn off the detection.</span><br>
+    <label class="checkbox-inline">
+      <input type="checkbox" id="hideLine" value="option1" checked="checked"> Line
+    </label>
+    <label class="checkbox-inline">
+      <input type="checkbox" id="hidePolyline" value="option2" checked="checked"> Polyline
+    </label>
+    <label class="checkbox-inline">
+      <input type="checkbox" id="hidePolygon" value="option3" checked="checked"> Polygon
+    </label>
+    <label class="checkbox-inline">
+      <input type="checkbox" id="hideRect" value="option3" checked="checked"> Rect
+    </label>
+    <hr>
+    <h4>Collision Detect On</h4>
+
+    <label class="checkbox-inline">
+      <input type="checkbox" id="detectLine" value="option1" checked="checked"> Line
+    </label>
+    <label class="checkbox-inline">
+      <input type="checkbox" id="detectPolyline" value="option2" checked="checked"> Polyline
+    </label>
+    <label class="checkbox-inline">
+      <input type="checkbox" id="detectPolygon" value="option3" checked="checked"> Polygon
+    </label>
+    <label class="checkbox-inline">
+      <input type="checkbox" id="detectRect" value="option3" checked="checked"> Rect
+    </label>
+    <hr>
+
+    <h4>Destroy</h4>
+    <span>The object won't exist anymore.</span><br>
+    <label class="checkbox-inline">
+      <input type="checkbox" id="destroy" value="option3"> Destroy Target
+    </label>
+    <hr>
+
+  </form>
+
+</div>
 
 <script src="appjs/engine.js"></script>
 <script src="js/ball2.js"></script>
+</body>
 
 </html>
