@@ -5,5 +5,6 @@ var engine = new engine();
 
 
 engine.createGameWorld('canvas','xmls/map.xmls');
+engine.updateFrame(1);
 
 // console.log(engine);
