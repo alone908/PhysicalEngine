@@ -511,7 +511,7 @@ engine.prototype = {
         }
       }
 
-      if( enterAngle > 135 || (enterAngle < 45 && enterAngle > -45) || enterAngle < -135){
+      if( enterAngle > 125 || (enterAngle < 55 && enterAngle > -55) || enterAngle < -125){
         this.ball.vector = this.ball.vector.rotateDeg(-180+2*enterAngle);
       }else {
         this.ball.vector = this.ball.vector.rotateDeg(-2*enterAngle);

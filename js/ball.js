@@ -15,7 +15,7 @@ $(document).ready(function(){
   var ball = {cx:0,
               cy:0,
               r:15,
-              speed:1,
+              speed:3,
               vector:initialVector};
 
   var lines = [
@@ -58,7 +58,7 @@ $(document).ready(function(){
     drawGameWorld();
     drawBall();
 
-  },1)
+  },5)
 
   function drawGameWorld(){
     lines.forEach(function(line,i){
@@ -166,7 +166,7 @@ $(document).ready(function(){
     var distoPoint2 = new Victor(line.x2-ball.cx,line.y2-ball.cy);
 
     if(endPoint){
-
+      console.log('endpoint');
       var keepMoving = true;
 
       while(keepMoving){
@@ -176,13 +176,16 @@ $(document).ready(function(){
         distoPoint2.x = line.x2-ball.cx;
         distoPoint2.y = line.y2-ball.cy;
         if( Number(distoPoint1.length().toFixed(1)) > ball.r || Number(distoPoint2.length().toFixed(1)) > ball.r ){
+          console.log('out');
           keepMoving = false
         }
       }
 
-      if( enterAngle > 135 || (enterAngle < 45 && enterAngle > -45) || enterAngle < -135){
+      if( enterAngle > 125 || (enterAngle < 55 && enterAngle > -55) || enterAngle < -125){
+        console.log(enterAngle);
         ball.vector = ball.vector.rotateDeg(-180+2*enterAngle);
       }else {
+        console.log(enterAngle);
         ball.vector = ball.vector.rotateDeg(-2*enterAngle);
       }
 
