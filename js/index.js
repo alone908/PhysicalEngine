@@ -40,16 +40,16 @@ document.getElementById('minusSize').onclick = function(e){
 }
 document.getElementById('addSpeed').onclick = function(e){
   var speed = Number(document.getElementById('speed').getAttribute('value'));
-  if(speed >= 0 && speed < 5 ){
-    document.getElementById('speed').setAttribute('value',Number( (speed+0.1).toFixed(1) ));
-    engine.ball.speed = Number( (speed+0.1).toFixed(1) );
+  if(speed >= 0 && speed < 10 ){
+    document.getElementById('speed').setAttribute('value',Number( (speed+1).toFixed(1) ));
+    engine.ball.speed = Number( (speed+1).toFixed(1) );
   }
 }
 document.getElementById('minusSpeed').onclick = function(e){
   var speed = Number(document.getElementById('speed').getAttribute('value'));
-  if(speed > 0 && speed <= 5 ){
-    document.getElementById('speed').setAttribute('value',Number( (speed-0.1).toFixed(1) ));
-    engine.ball.speed = Number( (speed-0.1).toFixed(1) );
+  if(speed > 0 && speed <= 10 ){
+    document.getElementById('speed').setAttribute('value',Number( (speed-1).toFixed(1) ));
+    engine.ball.speed = Number( (speed-1).toFixed(1) );
   }
 }
 document.getElementById('hideLine').onclick = function(e){
