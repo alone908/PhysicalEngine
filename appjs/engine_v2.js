@@ -364,23 +364,32 @@ engine.prototype = {
 
   },
 
-  addCircle: function(){
+  addCircle: function(property){
 
-    this.ball = {id:'game_ball',cx:0,cy:100,r:10,speed:1,vector:null,stroke:'black',style:'stroke-width: 1px;',fill:'yellow'};
-    if(Math.random() < 0.5){var sign1=-1}else { var sign1=1 }
-    if(Math.random() < 0.5){var sign2=-1}else { var sign2=1 }
-    var initialX = sign1*Math.random();
-    var initialY = sign2*Math.sqrt( 1-initialX*initialX );
-    this.ball.vector = new engine.vector(initialX,initialY);
+    // this.ball = {id:'game_ball',cx:0,cy:100,r:10,speed:1,vector:null,stroke:'black',style:'stroke-width: 1px;',fill:'yellow'};
+    // if(Math.random() < 0.5){var sign1=-1}else { var sign1=1 }
+    // if(Math.random() < 0.5){var sign2=-1}else { var sign2=1 }
+    // var initialX = sign1*Math.random();
+    // var initialY = sign2*Math.sqrt( 1-initialX*initialX );
+    // this.ball.vector = new engine.vector(initialX,initialY);
 
-    this.world.bodies.push({cx:0,
-                            cy:100,
-                            r:10,
-                            speed:1,
-                            vector:null,
+    this.world.bodies.push({cx:property.x,
+                            cy:property.y,
+                            r:property.r,
+                            // speed:1,
+                            velocity:new engine.vector(property.x,property.y),
                             stroke:'black',
                             style:'stroke-width: 1px;',
-                            fill:'yellow'})
+                            fill:'yellow'});
+
+    this.svg.drawCircle([{cx:property.x,
+                            cy:property.y,
+                            r:property.r,
+                            // speed:1,
+                            velocity:new engine.vector(property.x,property.y),
+                            stroke:'black',
+                            style:'stroke-width: 1px;',
+                            fill:'yellow'}]);                               
 
   },
 

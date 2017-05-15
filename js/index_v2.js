@@ -5,8 +5,19 @@ engine.createGameWorld('canvas');
 
 
 engine.add('circle',{
+  x:0,
+  y:0,
   r:10,
-  mass:100
+  mass:100,
+  velocity:{x:10,y:10},
+});
+
+engine.add('circle',{
+  x:100,
+  y:100,
+  r:15,
+  mass:100,
+  velocity:{x:10,y:10},
 })
 
 
