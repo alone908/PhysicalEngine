@@ -1,24 +1,28 @@
 function engine(){
 
   this.fps = 100;
-  this.dt = 1/this.fps;
+  this.fpms = 0.1;
+  this.dt = 1/this.fpms;
   this.updateFinish = true;
+  this.frameTimer = null;
+  this.frameCounter = 0;
 
   this.canvasId = null;
   this.canvas = null;
   this.ctx = null;
 
-  this.world = {bodies:[]};
-
-  this.frameTimer = null;
-
   this.detectOnLine = true;
   this.detectOnPolyline = true;
   this.detectOnPolygon = true;
   this.detectOnRect = true;
+  this.destroyTarget = false;
+
   this.ball = null;
   this.gameBorder = null;
-  this.destroyTarget = false;
+
+
+  this.world = {bodies:[],
+                rules:[]};
 
 }
 
@@ -337,18 +341,15 @@ engine.prototype = {
   },
 
   createGameWorld: function(canvasId=null,svgfile=null){
-
+    // console.log('createGameWorld');
     if(this.canvas === null && canvasId !== null){
       this.canvasId = canvasId;
       this.setCanvas();
     }
 
-    // if(svgfile !== null){
-    //   console.log(engine);
-    //   this.svg.svgfile = svgfile;
-    //   this.svg.loadSVG(svgfile);
-    // }
-
+    this.world.bodies.forEach(function(obj,i){
+      if(obj.shape === 'circle') engine.svg.drawCircle([obj]);
+    })
 
   },
 
@@ -366,51 +367,163 @@ engine.prototype = {
 
   addCircle: function(property){
 
-    // this.ball = {id:'game_ball',cx:0,cy:100,r:10,speed:1,vector:null,stroke:'black',style:'stroke-width: 1px;',fill:'yellow'};
-    // if(Math.random() < 0.5){var sign1=-1}else { var sign1=1 }
-    // if(Math.random() < 0.5){var sign2=-1}else { var sign2=1 }
-    // var initialX = sign1*Math.random();
-    // var initialY = sign2*Math.sqrt( 1-initialX*initialX );
-    // this.ball.vector = new engine.vector(initialX,initialY);
+    var cx = (property.x === undefined) ? 0 : property.x ;
+    var cy = (property.y === undefined) ? 0 : property.y ;
+    var r = (property.r === undefined) ? 0 : property.r ;
 
-    this.world.bodies.push({cx:property.x,
-                            cy:property.y,
-                            r:property.r,
-                            // speed:1,
-                            velocity:new engine.vector(property.x,property.y),
-                            stroke:'black',
-                            style:'stroke-width: 1px;',
-                            fill:'yellow'});
+    var mass = (property.mass === undefined) ? 0 : property.mass ;
 
-    this.svg.drawCircle([{cx:property.x,
-                            cy:property.y,
-                            r:property.r,
-                            // speed:1,
-                            velocity:new engine.vector(property.x,property.y),
-                            stroke:'black',
-                            style:'stroke-width: 1px;',
-                            fill:'yellow'}]);                               
+    if(property.velocity === undefined){
+      var velocity = new engine.vector(0,0);
+    }else {
+      var velocity = (property.velocity.x === undefined || property.velocity.y === undefined)
+      ? new engine.vector(0,0)
+      : new engine.vector(property.velocity.x,property.velocity.y);
+    }
+
+    var circle = {shape:'circle',
+                  cx:cx,
+                  cy:cy,
+                  r:r,
+                  area:Number((r*r*Math.PI).toFixed(2)),
+                  mass:mass,
+                  velocity:velocity,
+                  force:new engine.vector(0,0),
+                  acceleration:new engine.vector(0,0),
+                  stroke:'black',
+                  style:'stroke-width: 1px;',
+                  fill:'yellow'}
+
+    this.world.bodies.push(circle);
+    this.svg.drawCircle([circle]);
 
   },
 
-  moveBall: function(backwards=false,speed=null){
-    if(speed === null){
-      if(backwards){
-        this.ball.cx -= this.ball.vector.x*this.ball.speed;
-        this.ball.cy -= this.ball.vector.y*this.ball.speed;
-      }else if (!backwards) {
-        this.ball.cx += this.ball.vector.x*this.ball.speed;
-        this.ball.cy += this.ball.vector.y*this.ball.speed;
-      }
-    }else if (speed !== null) {
-      if(backwards){
-        this.ball.cx -= this.ball.vector.x*speed;
-        this.ball.cy -= this.ball.vector.y*speed;
-      }else if (!backwards) {
-        this.ball.cx += this.ball.vector.x*speed;
-        this.ball.cy += this.ball.vector.y*speed;
-      }
+  addRules: function(rules=[]){
+
+    if(typeof rules === 'object'){
+      rules.forEach(function(rule,i){
+        engine.world.rules.push(rule);
+      })
+    }else if (typeof rules === 'string') {
+      engine.world.rules.push(rule);
     }
+  },
+
+  applyRules: function(){
+    // console.log('applyrules');
+    this.world.bodies.forEach(function(obj,objKey){
+
+      engine.world.bodies[objKey].force.x = 0;
+      engine.world.bodies[objKey].force.y = 0;
+      engine.world.bodies[objKey].acceleration.x = 0;
+      engine.world.bodies[objKey].acceleration.y = 0;
+
+      engine.world.rules.forEach(function(rule,i){
+        if(rule === 'gravity') engine.applyGravity(objKey);
+        if(rule === 'border') engine.applyBorder(objKey);
+        if(rule === 'airfriction') engine.applyAirfriction(objKey);
+        // console.log(engine.world.bodies[objKey]);
+      })
+
+      //  console.log(engine.world.bodies[objKey].force.y);
+
+      engine.world.bodies[objKey].acceleration.x = engine.world.bodies[objKey].force.x/engine.world.bodies[objKey].mass;
+      engine.world.bodies[objKey].acceleration.y = engine.world.bodies[objKey].force.y/engine.world.bodies[objKey].mass;
+
+      // console.log(engine.world.bodies[objKey].acceleration.y);
+
+
+    })
+  },
+
+  applyGravity: function(objKey){
+    // console.log('applyGravity');
+    // if(this.frameCounter === 1){
+      this.world.bodies[objKey].force.y += -0.0098*this.world.bodies[objKey].mass;
+      // this.world.bodies[objKey].acceleration.y += -0.0098;
+      // console.log(this.world.bodies[objKey].acceleration.y);
+    // }
+  },
+
+  applyBorder: function(objKey){
+    switch (this.world.bodies[objKey].shape) {
+      case 'circle':
+
+        var cx = this.world.bodies[objKey].cx;
+        var cy = this.world.bodies[objKey].cy;
+        var r = this.world.bodies[objKey].r;
+
+        if(cx <= -this.canvas.width*0.5+r || cx >= this.canvas.width*0.5-r || cy <= -this.canvas.height*0.5+r || cy >= this.canvas.height*0.5-r){
+
+          if(cx <= -this.canvas.width*0.5+r) this.world.bodies[objKey].cx = -this.canvas.width*0.5+r;
+          if(cx >= this.canvas.width*0.5-r) this.world.bodies[objKey].cx = this.canvas.width*0.5-r;
+          if(cy <= -this.canvas.height*0.5+r) this.world.bodies[objKey].cy = -this.canvas.height*0.5+r;
+          if(cy >= this.canvas.height*0.5-r)  this.world.bodies[objKey].cy = this.canvas.height*0.5-r;
+
+          if(cx <= -this.canvas.width*0.5+r) this.world.bodies[objKey].velocity.x = -this.world.bodies[objKey].velocity.x;
+          if(cx >= this.canvas.width*0.5-r) this.world.bodies[objKey].velocity.x = -this.world.bodies[objKey].velocity.x;
+          if(cy <= -this.canvas.height*0.5+r) this.world.bodies[objKey].velocity.y = -this.world.bodies[objKey].velocity.y;
+          if(cy >= this.canvas.height*0.5-r)  this.world.bodies[objKey].velocity.y = -this.world.bodies[objKey].velocity.y;
+
+
+          // this.world.bodies[objKey].velocity.x = -this.world.bodies[objKey].velocity.x;
+          // this.world.bodies[objKey].velocity.y = -this.world.bodies[objKey].velocity.y;
+        }
+
+        break;
+      default:
+
+    }
+  },
+
+  applyAirfriction: function(objKey){
+    switch (this.world.bodies[objKey].shape) {
+      case 'circle':
+
+        var fx = -0.0000025*this.world.bodies[objKey].velocity.x*this.world.bodies[objKey].area ;
+        var fy = -0.0000025*this.world.bodies[objKey].velocity.y*this.world.bodies[objKey].area ;
+
+        // if( Math.abs(fx+this.world.bodies[objKey].force.x) <= 0.000005 ) fx = 0 ;
+        // if( Math.abs(fy+this.world.bodies[objKey].force.y) <= 0.000005 ) fy = 0 ;
+
+        if(objKey === 3){
+
+          // console.log(Math.abs(fy+this.world.bodies[objKey].force.y));
+        }
+
+        this.world.bodies[objKey].force.x += fx;
+        this.world.bodies[objKey].force.y += fy;
+
+        break;
+      default:
+
+    }
+  },
+
+  moveObj: function(backwards=false){
+    // console.log('moveObj');
+
+    this.world.bodies.forEach(function(obj,i){
+      var Vx = Number( (obj.velocity.x+obj.acceleration.x*engine.dt).toFixed(2) );
+      var Vy = Number( (obj.velocity.y+obj.acceleration.y*engine.dt).toFixed(2) );
+
+      engine.world.bodies[i].velocity.x = Vx;
+      engine.world.bodies[i].velocity.y = Vy;
+      engine.world.bodies[i].cx += Vx;
+      engine.world.bodies[i].cy += Vy;
+
+    })
+
+
+    // if(backwards){
+    //   this.ball.cx -= this.ball.vector.x;
+    //   this.ball.cy -= this.ball.vector.y;
+    // }else if (!backwards) {
+    //   this.ball.cx += this.ball.vector.x;
+    //   this.ball.cy += this.ball.vector.y;
+    // }
+
   },
 
   fireCollisionDetect: function(){
@@ -577,6 +690,7 @@ engine.prototype = {
   },
 
   clearFrame: function(){
+    // console.log('clear');
     this.ctx.clearRect(-this.canvas.width*0.5, -this.canvas.height*0.5, this.canvas.width, this.canvas.height);
   },
 
@@ -585,15 +699,20 @@ engine.prototype = {
     if(this.frameTimer === null){
       this.frameTimer = setInterval(function(){
         if(engine.updateFinish){
+          // console.log('next run');
           engine.updateFinish = false;
+          engine.frameCounter ++;
+
           engine.clearFrame();
-          engine.moveBall();
-          engine.fireCollisionDetect();
+          engine.applyRules();
+          engine.moveObj();
+          // engine.fireCollisionDetect();
           engine.createGameWorld();
+
           engine.updateFinish = true;
         }
 
-      },this.dt*1000)
+      },this.dt)
     }
   },
 

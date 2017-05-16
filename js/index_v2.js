@@ -5,20 +5,65 @@ engine.createGameWorld('canvas');
 
 
 engine.add('circle',{
-  x:0,
-  y:0,
-  r:10,
+  x:-225,
+  y:200,
+  r:150,
   mass:100,
-  velocity:{x:10,y:10},
+  velocity:{x:10,y:0},
+  // force:{x:0,y:0},
 });
+//
+// engine.add('circle',{
+//   x:50,
+//   y:100,
+//   r:100,
+//   mass:100,
+//   // velocity:{x:0,y:0},
+//   // force:{x:0,y:0},
+// });
 
-engine.add('circle',{
-  x:100,
-  y:100,
-  r:15,
-  mass:100,
-  velocity:{x:10,y:10},
-})
+// engine.add('circle',{
+//   x:220,
+//   y:100,
+//   r:50,
+//   mass:100,
+//   velocity:{x:10,y:0},
+//   // force:{x:0,y:0},
+// });
+
+// engine.add('circle',{
+//   x:320,
+//   y:100,
+//   r:20,
+//   mass:100,
+//   // velocity:{x:0,y:0},
+//   // force:{x:0,y:0},
+// });
+//
+// engine.add('circle',{
+//   x:380,
+//   y:100,
+//   r:10,
+//   mass:100,
+//   // velocity:{x:0,y:0},
+//   // force:{x:0,y:0},
+// });
+
+
+// engine.addRules(['gravity','border','airfriction']);
+// engine.addRules(['border','airfriction']);
+engine.addRules(['gravity','border']);
+
+
+engine.updateFrame();
+
+// engine.add('circle',{
+//   x:100,
+//   y:100,
+//   r:15,
+//   mass:100,
+//   velocity:{x:10,y:10},
+// })
 
 
 
