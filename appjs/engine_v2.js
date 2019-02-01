@@ -22,8 +22,7 @@ function engine(){
 
 
   this.world = {bodies:[],
-                rules:[],
-                collisionPairs:[]};
+                rules:[]};
 
 }
 
@@ -393,22 +392,22 @@ engine.prototype = {
                   acceleration:new engine.vector(0,0),
                   stroke:'black',
                   style:'stroke-width: 1px;',
-                  fill:'yellow',
-                  cr:0}
+                  fill:'yellow'}
 
     this.world.bodies.push(circle);
     this.svg.drawCircle([circle]);
 
   },
 
-  addRules: function(rules){
+  addRules: function(rules=[]){
 
     if(typeof rules === 'object'){
-      rules.forEach( function(rule,i){ engine.world.rules.push(rule);} );
+      rules.forEach(function(rule,i){
+        engine.world.rules.push(rule);
+      })
     }else if (typeof rules === 'string') {
       engine.world.rules.push(rule);
     }
-
   },
 
   applyRules: function(){
@@ -423,41 +422,53 @@ engine.prototype = {
       engine.world.rules.forEach(function(rule,i){
         if(rule === 'gravity') engine.applyGravity(objKey);
         if(rule === 'border') engine.applyBorder(objKey);
-        if(rule === 'collision') engine.applyCollision(objKey);
-        // if(rule === 'airfriction') engine.applyAirfriction(objKey);
+        if(rule === 'airfriction') engine.applyAirfriction(objKey);
         // console.log(engine.world.bodies[objKey]);
       })
 
+      //  console.log(engine.world.bodies[objKey].force.y);
+
       engine.world.bodies[objKey].acceleration.x = engine.world.bodies[objKey].force.x/engine.world.bodies[objKey].mass;
       engine.world.bodies[objKey].acceleration.y = engine.world.bodies[objKey].force.y/engine.world.bodies[objKey].mass;
+
+      // console.log(engine.world.bodies[objKey].acceleration.y);
+
 
     })
   },
 
   applyGravity: function(objKey){
+    // console.log('applyGravity');
+    // if(this.frameCounter === 1){
       this.world.bodies[objKey].force.y += -0.0098*this.world.bodies[objKey].mass;
+      // this.world.bodies[objKey].acceleration.y += -0.0098;
+      // console.log(this.world.bodies[objKey].acceleration.y);
+    // }
   },
 
   applyBorder: function(objKey){
-    var obj = this.world.bodies[objKey];
-
-    switch (obj.shape) {
+    switch (this.world.bodies[objKey].shape) {
       case 'circle':
 
-        var cx = obj.cx;
-        var cy = obj.cy;
-        var r = obj.r;
+        var cx = this.world.bodies[objKey].cx;
+        var cy = this.world.bodies[objKey].cy;
+        var r = this.world.bodies[objKey].r;
 
         if(cx <= -this.canvas.width*0.5+r || cx >= this.canvas.width*0.5-r || cy <= -this.canvas.height*0.5+r || cy >= this.canvas.height*0.5-r){
 
-          if(cx <= -this.canvas.width*0.5+r) obj.cx = -this.canvas.width*0.5+r;
-          if(cx >= this.canvas.width*0.5-r) obj.cx = this.canvas.width*0.5-r;
-          if(cy <= -this.canvas.height*0.5+r) obj.cy = -this.canvas.height*0.5+r;
-          if(cy >= this.canvas.height*0.5-r)  obj.cy = this.canvas.height*0.5-r;
+          if(cx <= -this.canvas.width*0.5+r) this.world.bodies[objKey].cx = -this.canvas.width*0.5+r;
+          if(cx >= this.canvas.width*0.5-r) this.world.bodies[objKey].cx = this.canvas.width*0.5-r;
+          if(cy <= -this.canvas.height*0.5+r) this.world.bodies[objKey].cy = -this.canvas.height*0.5+r;
+          if(cy >= this.canvas.height*0.5-r)  this.world.bodies[objKey].cy = this.canvas.height*0.5-r;
 
-          if(cx <= -this.canvas.width*0.5+r || cx >= this.canvas.width*0.5-r){ obj.velocity.x = -obj.velocity.x*(1-0.1); }
-          if(cy <= -this.canvas.height*0.5+r || cy >= this.canvas.height*0.5-r){ obj.velocity.y = -obj.velocity.y*(1-0.1); }
+          if(cx <= -this.canvas.width*0.5+r) this.world.bodies[objKey].velocity.x = -this.world.bodies[objKey].velocity.x;
+          if(cx >= this.canvas.width*0.5-r) this.world.bodies[objKey].velocity.x = -this.world.bodies[objKey].velocity.x;
+          if(cy <= -this.canvas.height*0.5+r) this.world.bodies[objKey].velocity.y = -this.world.bodies[objKey].velocity.y;
+          if(cy >= this.canvas.height*0.5-r)  this.world.bodies[objKey].velocity.y = -this.world.bodies[objKey].velocity.y;
 
+
+          // this.world.bodies[objKey].velocity.x = -this.world.bodies[objKey].velocity.x;
+          // this.world.bodies[objKey].velocity.y = -this.world.bodies[objKey].velocity.y;
         }
 
         break;
@@ -470,11 +481,16 @@ engine.prototype = {
     switch (this.world.bodies[objKey].shape) {
       case 'circle':
 
-        var fx = -0.000005*this.world.bodies[objKey].velocity.x*this.world.bodies[objKey].area ;
-        var fy = -0.000005*this.world.bodies[objKey].velocity.y*this.world.bodies[objKey].area ;
+        var fx = -0.0000025*this.world.bodies[objKey].velocity.x*this.world.bodies[objKey].area ;
+        var fy = -0.0000025*this.world.bodies[objKey].velocity.y*this.world.bodies[objKey].area ;
 
         // if( Math.abs(fx+this.world.bodies[objKey].force.x) <= 0.000005 ) fx = 0 ;
         // if( Math.abs(fy+this.world.bodies[objKey].force.y) <= 0.000005 ) fy = 0 ;
+
+        if(objKey === 3){
+
+          // console.log(Math.abs(fy+this.world.bodies[objKey].force.y));
+        }
 
         this.world.bodies[objKey].force.x += fx;
         this.world.bodies[objKey].force.y += fy;
@@ -483,78 +499,6 @@ engine.prototype = {
       default:
 
     }
-  },
-
-  applyCollision: function(){
-    engine.world.collisionPairs.forEach(function(pair,key){
-      if(engine.world.bodies[pair[0]].shape === 'circle' && engine.world.bodies[pair[1]].shape === 'circle'){
-        var obj1 = engine.world.bodies[pair[0]];
-        var obj2 = engine.world.bodies[pair[1]];
-
-        obj1.p = new engine.vector(obj1.cx,obj2.cy);
-        obj2.p = new engine.vector(obj2.cx,obj2.cy);
-
-        var dt,mt,v1,v2,cr,
-            sm = obj1.mass+obj2.mass,
-            dn = new engine.vector(obj2.cx-obj1.cx,obj2.cy-obj1.cy),
-            // dn = new engine.vector(obj1.cx-obj2.cx,obj1.cy-obj2.cy),
-            dx = dn.length();
-
-        dn.normalize();
-        dt = new engine.vector(dn.y, -dn.x);
-
-        mT = dn.multiply(obj2.r+obj1.r-dx);
-
-        obj2.p.tx( mT.multiply(obj1.mass/sm) );
-        obj1.p.tx( mT.multiply(-obj2.mass/sm) );
-
-        cr = Math.min(obj2.cr,obj1.cr);
-
-        v1 = dn.multiply(obj2.velocity.dot(dn)).length();
-        v2 = dn.multiply(obj1.velocity.dot(dn)).length();
-
-        obj2.velocity = dt.multiply(obj2.velocity.dot(dt));
-        obj2.velocity.tx(dn.multiply((cr * obj1.mass * (v2 - v1) + obj2.mass * v1 + obj1.mass * v2) / sm));
-
-        obj1.velocity = dt.multiply(obj1.velocity.dot(dt));
-        obj1.velocity.tx(dn.multiply((cr * obj1.mass * (v1 - v2) + obj1.mass * v2 + obj1.mass * v1) / sm));
-
-        engine.world.bodies[pair[0]].velocity = obj1.velocity;
-        engine.world.bodies[pair[1]].velocity = obj2.velocity;
-
-        // engine.world.bodies[pair[0]].velocity.x = -obj1.velocity.x;
-        // engine.world.bodies[pair[0]].velocity.y = -obj1.velocity.y;
-        // engine.world.bodies[pair[1]].velocity.x = 0;
-        // engine.world.bodies[pair[1]].velocity.y = 0;
-      }
-    })
-  },
-
-  collidePair: function(){
-    engine.world.collisionPairs = [];
-    for(var i = 0; i < engine.world.bodies.length-1; i ++){
-      for(j = i+1; j < engine.world.bodies.length; j ++){
-        var obj1 = engine.world.bodies[i];
-        var obj2 = engine.world.bodies[j];
-        if(obj1.shape === 'circle' && obj2.shape === 'circle') var type = 'CircleVsCircle';
-        switch (type) {
-          case 'CircleVsCircle':
-
-            var distance = engine.math.distanceOfPoints(obj1.cx,obj1.cy,obj2.cx,obj2.cy);
-
-            if(distance <= obj1.r+obj2.r+2){
-              engine.world.collisionPairs.push([i,j]);
-              // console.log(engine.world.collisionPairs);
-            }
-
-            break;
-          default:
-
-        }
-
-      }
-    }
-
   },
 
   moveObj: function(backwards=false){
@@ -760,7 +704,6 @@ engine.prototype = {
           engine.frameCounter ++;
 
           engine.clearFrame();
-          engine.collidePair();
           engine.applyRules();
           engine.moveObj();
           // engine.fireCollisionDetect();
@@ -838,24 +781,7 @@ engine.prototype = {
     this.rotateDeg = function (angle) {
     	angle = degrees2radian(angle);
     	return this.rotate(angle);
-    },
-    this.dot = function(v){
-      return this.x * v.x + this.y * v.y;
-    },
-    this.normalize = function(){
-      var s = 1 / this.length();
-      this.x *= s;
-      this.y *= s;
-      return this;
-    },
-    this.multiply = function(s){
-      return new engine.vector(this.x * s, this.y * s);
-    },
-    this.tx = function(v){
-      this.x += v.x;
-      this.y += v.y;
-      return this;
-    },
+    }
     radian2degrees = function(rad) {
       var degrees = 180 / Math.PI;
 	    return rad * degrees;
@@ -883,9 +809,6 @@ engine.prototype = {
       var a = Math.sqrt( s*(s-a)*(s-b)*(s-c) );
 
       return a ;
-    },
-    distanceOfPoints: function(x1,y1,x2,y2){
-      return Math.sqrt( (x2-x1) * (x2-x1) + (y2-y1) * (y2-y1));
     }
   },  // end of math object --------------------------------------------------
 
